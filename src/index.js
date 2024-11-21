@@ -1,5 +1,8 @@
-const dotenv = require("dotenv");
-dotenv.config();
+if (process.env.ENVIRONMENT_NAME === "local") {
+  const dotenv = require("dotenv");
+  dotenv.config();
+}
+
 const Logger = require("./utils/logger");
 const app = require("./app");
 
