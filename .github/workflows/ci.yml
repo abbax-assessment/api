@@ -112,5 +112,5 @@ jobs:
       run: |
         curl -X POST \
           -H "Authorization: token ${{ secrets.ORG_TOKEN }}" \
-            -d '{"ref":"main","inputs":{"tag":"${{ steps.vars.outputs.sha_short }}","artifact_id":"${{ steps.artifact.outputs.id }}"}}' \
+            -d '{"ref":"main","inputs":{"tag":"${{ steps.vars.outputs.sha_short }}","artifact-id":"${{ steps.artifact.outputs.id }}", "workflow-run-id":"${{ github.run_id }}"}}' \
             https://github.com/eros-assessment/devops/actions/workflows/deploy-api.yml
