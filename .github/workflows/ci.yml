@@ -26,12 +26,11 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          echo ls -la
-          if [ ! -d "node_modules" ]; then
-            echo "Cache miss, installing dependencies..."
-            npm ci
-          else
+          if [ -d ~/.npm ]; then
             echo "Cache hit, skipping npm ci..."
+            cp -r ~/.npm/* ./node_modules/
+          else
+            npm ci
           fi
 
       - name: Build application
