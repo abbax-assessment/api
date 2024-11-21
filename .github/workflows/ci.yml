@@ -41,6 +41,25 @@ jobs:
         run: |
           echo "Building application..."
 
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
+
+      - name: Upload HTML Report
+        if: failure()  # Only upload the HTML if vulnerabilities were found
+        uses: actions/upload-artifact@v4
+        with:
+          name: snyk-html-report
+          path: snyk-report.html 
+
       - name: Run tests
         run: npm test
 
