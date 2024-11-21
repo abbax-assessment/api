@@ -54,6 +54,6 @@ jobs:
         with:
           name: ${{ steps.vars.outputs.sha_short }}
           path: |
-            src/**
+            src/**/*
             !**/*.test.js
             node_modules
