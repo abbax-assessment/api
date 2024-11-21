@@ -1,0 +1,51 @@
+name: Build, Test and Publish
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Cache npm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Install Dependencies
+        run: |
+          if [ ! -d "node_modules" ]; then
+            echo "Cache miss, installing dependencies..."
+            npm ci
+          else
+            echo "Cache hit, skipping npm ci..."
+          fi
+
+      - name: Build application
+        run: |
+          echo "Building application..."
+
+      - name: Run tests
+        run: npm test
+
+      - name: Keep production dependencies
+        run: |
+          npm prune --production
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.SHORT_SHA }}
+          path: './src/**, !**/*.test.js, node_modules'
