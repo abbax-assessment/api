@@ -45,10 +45,14 @@ jobs:
         run: |
           npm prune --production
 
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.sha::7 }}
+          name: ${{ steps.vars.outputs.sha_short }}
           path: |
             src/**
             !**/*.test.js
