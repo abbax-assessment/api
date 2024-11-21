@@ -14,25 +14,28 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20'      
 
       - name: Cache npm modules
         uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-modules-
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
 
       - name: Install Dependencies
         run: |
-          if [ -d ~/.npm ]; then
-            echo "Cache hit, skipping npm ci..."
-            mkdir node_modules
-            cp -r ~/.npm/* ./node_modules/
-          else
-            npm ci
-          fi
+          npm ci
 
       - name: Build application
         run: |
