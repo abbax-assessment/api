@@ -114,7 +114,7 @@ jobs:
           ref: dev
           wait_interval: 10
           # TODO envrionment
-          client_payload: '{"tag":"${{ steps.vars.outputs.sha_short }}","artifact-id":"${{ steps.artifact.outputs.id }}", "workflow-run-id":"${{ github.run_id }}"}'
+          client_payload: '{"tag":"${{ steps.vars.outputs.sha_short }}","artifact-id":"${{ steps.artifact.outputs.artifact-id }}", "workflow-run-id":"${{ github.run_id }}"}'
           propagate_failure: true
           trigger_workflow: true
           wait_workflow: true
