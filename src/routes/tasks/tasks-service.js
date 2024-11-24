@@ -1,36 +1,23 @@
+const { Producer } = require("sqs-producer")
+// create simple producer
+const producer = Producer.create({
+  queueUrl: 'https://sqs.eu-west-1.amazonaws.com/569985934894/test',
+});
+
+const { v4: uuid } = require("uuid")
+
 class TasksService {
   constructor() { }
 
-  async getTasks() {
-    return [{
-      id: 1,
-      attempts: 1,
-      status: "running",
-      type: "light",
-      resourceIntensive: "cpu",
-      failPercentage: 10
-    },
-    {
-      id: 3,
-      attempts: 1,
-      status: "done",
-      type: "light",
-      resourceIntensive: "cpu",
-      failPercentage: 10
-    },
-    {
-      id: 2,
-      attempts: 3,
-      status: "failed",
-      type: "light",
-      resourceIntensive: "cpu",
-      failPercentage: 10
-    }
-    ];
-  }
-
   async createTasks(tasks) {
-    // put on dynamodb batch
+    tasks = Array.isArray(tasks) ? tasks : [tasks];
+    await producer.send(tasks.map((task) => {
+      const taskId = uuid();
+      return {
+        id: taskId,
+        body: JSON.stringify(task)
+      }
+    }))
   }
 
   async deleteTasks() {
