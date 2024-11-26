@@ -1,7 +1,7 @@
 const { Producer } = require("sqs-producer")
 // create simple producer
 const producer = Producer.create({
-  queueUrl: 'https://sqs.eu-west-1.amazonaws.com/569985934894/test',
+  queueUrl: 'https://sqs.eu-west-1.amazonaws.com/569985934894/tsk-dev-tasks',
 });
 
 const { v4: uuid } = require("uuid")
