@@ -17,9 +17,13 @@ class TasksService {
     tasks = Array.isArray(tasks) ? tasks : [tasks];
     await producer.send(tasks.map((task) => {
       const taskId = uuid();
+      const traceHeader = AWSXRay.getSegment().trace_id;
       return {
         id: taskId,
-        body: JSON.stringify(task)
+        body: {
+          traceHeader,
+          taskBody: JSON.stringify({ id: taskId, ...task })
+        }
       }
     }))
   }
