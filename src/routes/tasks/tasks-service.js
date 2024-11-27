@@ -1,13 +1,17 @@
 const { Producer } = require("sqs-producer")
 // create simple producer
 const producer = Producer.create({
-  queueUrl: 'https://sqs.eu-west-1.amazonaws.com/569985934894/tsk-dev-tasks',
+  queueUrl: process.env.TASKS_QUEUE_URL
 });
 
 const { v4: uuid } = require("uuid")
 
 class TasksService {
   constructor() { }
+
+  async getTasks() {
+    //
+  }
 
   async createTasks(tasks) {
     tasks = Array.isArray(tasks) ? tasks : [tasks];

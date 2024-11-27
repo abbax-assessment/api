@@ -9,7 +9,7 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(AWSXRay.express.openSegment("api-server-dev")); // TODO env
+app.use(AWSXRay.express.openSegment(`api-server-${process.env.ENVIRONMENT}`));
 
 app.use(cors());
 app.use(express.json());

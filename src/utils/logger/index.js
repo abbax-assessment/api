@@ -94,7 +94,7 @@ const Logger = {
             winston.format.colorize(),
             winston.format.printf((info) => `[${info.level}] ${info.message}${rest(info)}`)
           ),
-          silent: process.env.NODE_ENV === "test",
+          silent: process.env.ENVIRONMENT === "test",
         }),
       ],
       defaultMeta: {
