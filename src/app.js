@@ -8,7 +8,9 @@ const getXray = require("./utils/xray");
 const AWSXRay = getXray();
 const app = express();
 
-
+if (AWSXRay) {
+  app.use(AWSXRay.express.openSegment(`api-server-${process.env.ENVIRONMENT}`));
+}
 
 app.use(cors());
 app.use(express.json());
