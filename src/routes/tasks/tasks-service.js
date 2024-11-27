@@ -20,10 +20,10 @@ class TasksService {
       const traceHeader = AWSXRay.getSegment().trace_id;
       return {
         id: taskId,
-        body: {
+        body: JSON.stringify({
           traceHeader,
-          taskBody: JSON.stringify({ id: taskId, ...task })
-        }
+          taskBody: { id: taskId, ...task }
+        })
       }
     }))
   }
