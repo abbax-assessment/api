@@ -1,10 +1,13 @@
 const { Producer } = require("sqs-producer")
+
 // create simple producer
 const producer = Producer.create({
   queueUrl: process.env.TASKS_QUEUE_URL
 });
 
-const { v4: uuid } = require("uuid")
+const { v4: uuid } = require("uuid");
+const getXray = require("../../utils/xray");
+const AWSXRay = getXray();
 
 class TasksService {
   constructor() { }
@@ -17,7 +20,7 @@ class TasksService {
     tasks = Array.isArray(tasks) ? tasks : [tasks];
     await producer.send(tasks.map((task) => {
       const taskId = uuid();
-      const traceHeader = AWSXRay.getSegment().trace_id;
+      const traceHeader = AWSXRay ? AWSXRay.getSegment().trace_id : "DUMMY-TRACE-ID";
       return {
         id: taskId,
         body: JSON.stringify({
