@@ -1,3 +1,5 @@
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
+
 if (process.env.ENVIRONMENT_NAME === "local") {
   const dotenv = require("dotenv");
   dotenv.config();

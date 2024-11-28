@@ -1,6 +1,5 @@
 const { Producer } = require("sqs-producer")
 
-// create simple producer
 const producer = Producer.create({
   queueUrl: process.env.TASKS_QUEUE_URL
 });
@@ -18,18 +17,24 @@ class TasksService {
 
   async createTasks(tasks) {
     tasks = Array.isArray(tasks) ? tasks : [tasks];
+    const newTasks = [];
     await producer.send(tasks.map((task) => {
       const taskId = uuid();
       const traceHeader = AWSXRay ? AWSXRay.getSegment().trace_id : "DUMMY-TRACE-ID";
-      return {
+      const payload = {
         id: taskId,
         body: JSON.stringify({
           traceHeader,
           taskBody: { id: taskId, ...task }
         })
       }
+      newTasks.push(payload);
+      return payload;
     }))
+
+    return newTasks;
   }
+
 
   async deleteTasks() {
     // batch delete on dynamodb

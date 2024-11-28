@@ -14,8 +14,8 @@ class TasksController extends BaseController {
   }  
 
   async createTasks(req, res) {
-    await this.tasksService.createTasks(req.body);
-    res.status(200)
+    const createdTasks = await this.tasksService.createTasks(req.body);
+    res.send(createdTasks)
   } 
 
   async deleteTasks(req, res) {
