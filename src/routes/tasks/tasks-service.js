@@ -21,7 +21,7 @@ class TasksService {
     if (AWSXRay) {
       const segment = AWSXRay.getSegment();
       segment.addAnnotation("Environment", process.env.ENVIRONMENT);
-      segment.addMetadata("TaskPayload", taskBody);
+      segment.addMetadata("TaskPayload", tasks);
     }
     await producer.send(tasks.map((task) => {
       const taskId = uuid();
