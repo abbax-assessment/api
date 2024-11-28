@@ -18,16 +18,20 @@ class TasksService {
   async createTasks(tasks) {
     tasks = Array.isArray(tasks) ? tasks : [tasks];
     const newTasks = [];
+    if (AWSXRay) {
+      const segment = AWSXRay.getSegment();
+      segment.addAnnotation("Environment", process.env.ENVIRONMENT);
+      segment.addMetadata("TaskPayload", taskBody);
+    }
     await producer.send(tasks.map((task) => {
       const taskId = uuid();
-      const traceHeader = AWSXRay ? AWSXRay.getSegment().trace_id : "DUMMY-TRACE-ID";
       const payload = {
         id: taskId,
         body: JSON.stringify({
-          traceHeader,
           taskBody: { id: taskId, ...task }
         })
-      }
+      }      
+
       newTasks.push(payload);
       return payload;
     }))
