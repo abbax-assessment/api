@@ -18,7 +18,7 @@ if (process.env.ENVIRONMENT === "local") {
 app.use(express.json());
 
 app.get("/health-check", (req, res) =>
-  res.end(JSON.stringify({ status: "ok" }))
+  res.status(200).send('OK')
 );
 
 app.use("/api", routes);
