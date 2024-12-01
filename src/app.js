@@ -4,6 +4,7 @@ const express = require("express");
 const routes = require("./routes");
 const cors = require('cors');
 const getXray = require("./utils/xray");
+const incomingRequestLogger = require("./utils/logger/incoming-request-logger")
 
 const AWSXRay = getXray();
 const app = express();
@@ -21,6 +22,7 @@ app.get("/health-check", (req, res) =>
   res.status(200).send('OK')
 );
 
+app.use(incomingRequestLogger);
 app.use("/api", routes);
 
 if (AWSXRay) {
