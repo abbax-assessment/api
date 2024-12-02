@@ -1,8 +1,28 @@
-const { Producer } = require("sqs-producer")
+const Logger = require("../../utils/logger");
+const { Producer } = require("sqs-producer");
+const AWS = require("aws-sdk");
+
+const logger = Logger.create();
 
 const producer = Producer.create({
   queueUrl: process.env.TASKS_QUEUE_URL
 });
+
+const docClient = new AWS.DynamoDB.DocumentClient();
+const scanTable = async (tableName) => {
+  const params = {
+    TableName: tableName,
+  };
+
+  try {
+    const data = await docClient.scan(params).promise();
+    logger.info('Scan succeeded', { items: data.Items.length });
+    return data.Items;
+  } catch (err) {
+    logger.error('Unable to scan table:', { error: err });
+    throw err;
+  }
+};
 
 const { v4: uuid } = require("uuid");
 const getXray = require("../../utils/xray");
@@ -12,7 +32,13 @@ class TasksService {
   constructor() { }
 
   async getTasks() {
-    //
+    const tableName = process.env.TASKS_DYNAMODB_TABLE;
+    try {
+      const results = await scanTable(tableName);
+      return results;
+    } catch (error) {
+      logger.error('Error scanning the table', { error });
+    }
   }
 
   async createTasks(tasks) {
@@ -30,7 +56,7 @@ class TasksService {
         body: JSON.stringify({
           taskBody: { id: taskId, ...task }
         })
-      }      
+      }
 
       newTasks.push(payload);
       return payload;
