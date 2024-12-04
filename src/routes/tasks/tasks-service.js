@@ -47,6 +47,7 @@ class TasksService {
   async createTasks(tasks) {
     tasks = Array.isArray(tasks) ? tasks : [tasks];
     const newTasks = [];
+    const subsegments = [];
 
     if (AWSXRay) {
       const segment = AWSXRay.getSegment();
@@ -59,7 +60,7 @@ class TasksService {
     }
 
     // Process each task
-    await Promise.all(tasks.map(async (task) => {
+    const payloads = tasks.map((task) => {
       const taskId = uuid();
       const payload = {
         id: taskId,
@@ -78,23 +79,23 @@ class TasksService {
         taskSubsegment.addAnnotation("TaskId", taskId);
         taskSubsegment.addAnnotation("Environment", process.env.ENVIRONMENT);
         taskSubsegment.addMetadata("TaskPayload", task);
-
-        // Send the SQS message and close the subsegment when done
-        await producer.send([payload]);
-        taskSubsegment.close(); // Close task subsegment once SQS operation is done
+        subsegments.push(taskSubsegment);
       }
 
       return payload;
-    }));
+    });
 
-    // Close the task creation subsegment once all tasks are processed
+    await producer.send(payloads);
+
     if (AWSXRay) {
+      // Close the task creation subsegment once all tasks are processed
+      subsegments.forEach((subsegment) => subsegment.close());
       const segment = AWSXRay.getSegment();
       const taskCreationSubsegment = segment.subsegments.find(subsegment => subsegment.name === 'TaskCreation');
       if (taskCreationSubsegment) {
         taskCreationSubsegment.close(); // Close the overall task creation subsegment
       }
-    }
+    }    
 
     return newTasks;
   }
