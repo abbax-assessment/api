@@ -79,14 +79,6 @@ class TasksService {
         taskSubsegment.addAnnotation("Environment", process.env.ENVIRONMENT);
         taskSubsegment.addMetadata("TaskPayload", task);
 
-        // Add trace header to message for downstream propagation
-        payload.messageAttributes = {
-          AWSTraceHeader: {
-            DataType: 'String',
-            StringValue: AWSXRay.utils.getTraceHeader(segment)  // Propagate trace context
-          }
-        };
-
         // Send the SQS message and close the subsegment when done
         await producer.send([payload]);
         taskSubsegment.close(); // Close task subsegment once SQS operation is done
