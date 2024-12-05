@@ -23,7 +23,7 @@ app.get("/health-check", (req, res) =>
 );
 
 app.use(incomingRequestLogger);
-app.use("/api", routes);
+app.use(routes);
 
 if (AWSXRay) {
   app.use(AWSXRay.express.closeSegment());
