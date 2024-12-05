@@ -15,7 +15,7 @@ class TasksRouter {
       tasksController.createTasks
     );
     this.routes.delete(
-      "/",
+      "/all",
       tasksController.deleteTasks
     )
     

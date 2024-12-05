@@ -13,8 +13,8 @@ if (AWSXRay) {
   app.use(AWSXRay.express.openSegment(`api-server-${process.env.ENVIRONMENT}`));
 }
 
+app.use(cors());
 if (process.env.ENVIRONMENT === "local") {
-  app.use(cors());
 }
 app.use(express.json());
 
